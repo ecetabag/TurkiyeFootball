@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ranking Attendance Question</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+    }
+
+    h2 {
+      margin-bottom: 10px;
+    }
+
+    #ranking-list {
+      list-style: none;
+      padding: 0;
+      max-width: 400px;
+    }
+
+    li {
+      margin: 8px 0;
+      padding: 12px;
+      background: #f0f0f0;
+      border: 1px solid #ccc;
+      cursor: grab;
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-right: 10px;
+    }
+
+    #feedback {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Rank the countries from highest to lowest single-match attendance in women's football:</h2>
+
+  <ul id="ranking-list" ondrop="drop(event)" ondragover="allowDrop(event)">
+    <li draggable="true" ondragstart="drag(event)" id="england">England</li>
+    <li draggable="true" ondragstart="drag(event)" id="brazil">Brazil</li>
+    <li draggable="true" ondragstart="drag(event)" id="germany">Germany</li>
+    <li draggable="true" ondragstart="drag(event)" id="usa">USA</li>
+    <li draggable="true" ondragstart="drag(event)" id="turkey">Türkiye</li>
+  </ul>
+
+  <button onclick="checkAnswer()">Check Answer</button>
+  <button onclick="showAnswer()">Show Correct Answer</button>
+
+  <div id="feedback"></div>
+
+  <script>
+    function allowDrop(ev) {
+      ev.preventDefault();
+    }
+
+    function drag(ev) {
+      ev.dataTransfer.setData("text", ev.target.id);
+    }
+
+    function drop(ev) {
+      ev.preventDefault();
+      const data = ev.dataTransfer.getData("text");
+      const dragged = document.getElementById(data);
+      if (ev.target.tagName === "LI") {
+        ev.target.parentNode.insertBefore(dragged, ev.target.nextSibling);
+      }
+    }
+
+    function checkAnswer() {
+      const correctOrder = ["england", "brazil", "germany", "usa", "turkey"];
+      const listItems = document.querySelectorAll("#ranking-list li");
+      let userOrder = Array.from(listItems).map(li => li.id);
+
+      if (JSON.stringify(userOrder) === JSON.stringify(correctOrder)) {
+        document.getElementById("feedback").textContent = "✅ Correct! Great job!";
+        document.getElementById("feedback").style.color = "green";
+      } else {
+        document.getElementById("feedback").textContent = "❌ Not quite. Try again!";
+        document.getElementById("feedback").style.color = "red";
+      }
+    }
+
+    function showAnswer() {
+      const attendanceData = {
+        england: "60,160",
+        brazil: "42,326",
+        germany: "38,365",
+        usa: "34,130",
+        turkey: "28,000"
+      };
+
+      for (const [id, number] of Object.entries(attendanceData)) {
+        const li = document.getElementById(id);
+        const name = li.textContent.split(" – ")[0]; // Avoid repeating if clicked multiple times
+        li.textContent = `${name} – ${number}`;
+      }
+    }
+  </script>
+
+</body>
+</html>
